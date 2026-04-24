@@ -9,7 +9,7 @@ import (
 )
 
 type Service struct {
-	ID          uuid.UUID       `gorm:"type:uuid,default:uuid_generate_v4(),primaryKey"`
+	ID          uuid.UUID       `gorm:"type:uuid;default:gen_random_uuid();primaryKey"`
 	ServiceName string          `gorm:"size:255"`
 	Price       decimal.Decimal `gorm:"type:decimal(10,2)"`
 	UserID      uuid.UUID       `gorm:"type:uuid"`

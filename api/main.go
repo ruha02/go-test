@@ -11,12 +11,13 @@ import (
 )
 
 func main() {
+
 	// init logger
 	logger, err := zap.NewDevelopment()
+
 	if err != nil {
 		log.Fatalf("Fatal to init logger: %v", err)
 	}
-	defer logger.Sync()
 	logger.Info("Starting server...")
 
 	// init config from .env or environment
@@ -24,10 +25,12 @@ func main() {
 		logger.Info("Not found .env file. Using existing environment")
 	}
 	cfg, err := load_config()
+
 	if err != nil {
 		logger.Error("Failed to load configuration")
 		return
 	}
+	logger.Info("Environment", zap.String("DATABASE_URL", cfg.DatabaseURL))
 
 	db, err := init_db(cfg, logger)
 	if err != nil {
@@ -41,6 +44,7 @@ func main() {
 
 	r := gin.New()
 	r.Use(ginzap.Ginzap(logger, time.RFC3339, true))
+
 	createRouters(r, db)
 	r.Run()
 }

@@ -14,5 +14,5 @@ func createRouters(r *gin.Engine, db *gorm.DB) {
 	r.GET("/services/:id", func(c *gin.Context) { handleReadService(c, db) })
 	r.POST("/services", func(c *gin.Context) { handleCreateService(c, db) })
 	r.PUT("/services/:id", func(c *gin.Context) { handleUpdateService(c, db) })
-	r.DELETE("/services/:id", func(c *gin.Context) { handleListSeriveces(c, db) })
+	r.DELETE("/services/:id", func(c *gin.Context) { handleDeleteService(c, db) })
 }

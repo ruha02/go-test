@@ -1,23 +1,11 @@
 package main
 
 import (
-	"time"
-
-	"github.com/google/uuid"
-	"github.com/shopspring/decimal"
 	"go.uber.org/zap"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"moul.io/zapgorm2"
 )
-
-type Service struct {
-	ServiceName string          `gorm:"size:255"`
-	Price       decimal.Decimal `gorm:"type:decimal(10,2)"`
-	UserID      uuid.UUID       `gorm:"type:uuid,default:uuid_generate_v4(),primaryKey"`
-	StartedAt   time.Time
-	FinishedAt  time.Time
-}
 
 func init_db(cfg *Config, log *zap.Logger) (*gorm.DB, error) {
 	logger := zapgorm2.New(log)

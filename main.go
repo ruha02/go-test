@@ -19,9 +19,19 @@ func main() {
 	if err := godotenv.Load(); err != nil {
 		logger.Info("Not found .env file. Using existing environment")
 	}
-	// cfg, err := load_config()
+	cfg, err := load_config()
+	if err != nil {
+		logger.Error("Failed to load configuration")
+	}
 
-	// init db
+	db, err := init_db(cfg, logger)
+	if err != nil {
+		logger.Error("Failed to connect to database")
+	}
+
+	if err := auto_migrate(db); err != nil {
+		logger.Error("Automigration failed")
+	}
 
 	// init crudl route
 

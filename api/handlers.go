@@ -36,6 +36,16 @@ type SumResult struct {
 	UserID      uuid.UUID       `json:"user_id" binding:"uuid"`
 }
 
+// @Summary      Список сервисов
+// @Description  Получить постраничный список сервисов
+// @Tags         services
+// @Accept       json
+// @Produce      json
+// @Param        offset query int false "Смещение"
+// @Param        limit  query int false "Количество"
+// @Success      200 {object} map[string]interface{} "data, count, limit, offset"
+// @Failure      500 {object} map[string]string "error"
+// @Router       /services [get]
 func handleListSeriveces(ctx *gin.Context, db *gorm.DB) {
 	var services []Service
 	var results []ServiceRead
@@ -81,6 +91,15 @@ func handleListSeriveces(ctx *gin.Context, db *gorm.DB) {
 	ctx.JSON(http.StatusOK, gin.H{"data": results, "count": count, "limit": limit, "offset": offset})
 }
 
+// @Summary      Создать сервис
+// @Description  Создаёт новый сервис
+// @Tags         services
+// @Accept       json
+// @Produce      json
+// @Param        service body ServiceCreateUpdate true "Данные сервиса"
+// @Success      201 {object} map[string]string "id"
+// @Failure      400 {object} map[string]string "error"
+// @Router       /services [post]
 func handleCreateService(ctx *gin.Context, db *gorm.DB) {
 	var createService ServiceCreateUpdate
 	if err := ctx.ShouldBindJSON(&createService); err != nil {
@@ -119,6 +138,15 @@ func handleCreateService(ctx *gin.Context, db *gorm.DB) {
 	ctx.JSON(http.StatusCreated, gin.H{"id": service.ID})
 }
 
+// @Summary      Получить сервис по ID
+// @Description  Возвращает детали сервиса по его ID
+// @Tags         services
+// @Accept       json
+// @Produce      json
+// @Param        id path string true "ID сервиса"
+// @Success      200 {object} ServiceRead "service"
+// @Failure      404 {object} map[string]string "error"
+// @Router       /services/{id} [get]
 func handleReadService(ctx *gin.Context, db *gorm.DB) {
 	id := ctx.Param("id")
 	var service Service
@@ -136,6 +164,15 @@ func handleReadService(ctx *gin.Context, db *gorm.DB) {
 	})
 }
 
+// @Summary      Удалить сервис
+// @Description  Удаляет сервис по его ID
+// @Tags         services
+// @Accept       json
+// @Produce      json
+// @Param        id path string true "ID сервиса"
+// @Success      204 "No Content"
+// @Failure      404 {object} map[string]string "error"
+// @Router       /services/{id} [delete]
 func handleDeleteService(ctx *gin.Context, db *gorm.DB) {
 	id := ctx.Param("id")
 	var service Service
@@ -146,6 +183,16 @@ func handleDeleteService(ctx *gin.Context, db *gorm.DB) {
 	ctx.Status(http.StatusNoContent)
 }
 
+// @Summary      Обновить сервис
+// @Description  Обновляет существующий сервис по ID
+// @Tags         services
+// @Accept       json
+// @Produce      json
+// @Param        id      path string true "ID сервиса"
+// @Param        service body ServiceCreateUpdate true "Новые данные сервиса"
+// @Success      200 {object} map[string]string "updated"
+// @Failure      400 {object} map[string]string "error"
+// @Router       /services/{id} [put]
 func handleUpdateService(ctx *gin.Context, db *gorm.DB) {
 	id := ctx.Param("id")
 	var service_update ServiceCreateUpdate
@@ -180,6 +227,18 @@ func handleUpdateService(ctx *gin.Context, db *gorm.DB) {
 	}
 }
 
+// @Summary      Сумма сервисов
+// @Description  Вычисляет суммарную стоимость сервисов по пользователю и названию за указанный период
+// @Tags         services
+// @Accept       json
+// @Produce      json
+// @Param        user_id       query string true "ID пользователя"
+// @Param        service_name  query string true "Название сервиса"
+// @Param        start         query string true "Месяц начала (MM-YYYY)"
+// @Param        finish        query string true "Месяц окончания (MM-YYYY)"
+// @Success      200 {object} map[string]decimal.Decimal "sum"
+// @Failure      400 {object} map[string]string "error"
+// @Router       /services/sum [get]
 func handleSumService(ctx *gin.Context, db *gorm.DB) {
 	var result SumResult
 	user_id := ctx.Query("user_id")

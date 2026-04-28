@@ -1,4 +1,248 @@
+definitions:
+  main.ServiceCreateUpdate:
+    properties:
+      finished_at:
+        type: string
+      price:
+        type: number
+      service_name:
+        type: string
+      started_at:
+        type: string
+      user_id:
+        type: string
+    required:
+    - price
+    - service_name
+    - started_at
+    - user_id
+    type: object
+  main.ServiceRead:
+    properties:
+      finished_at:
+        type: string
+      id:
+        type: string
+      price:
+        type: number
+      service_name:
+        type: string
+      started_at:
+        type: string
+      user_id:
+        type: string
+    required:
+    - finished_at
+    - id
+    - price
+    - service_name
+    - started_at
+    - user_id
+    type: object
 info:
   contact: {}
-paths: {}
+paths:
+  /helthcheck:
+    get:
+      description: Проверка работоспособности сервера
+      responses:
+        "200":
+          description: 'status: OK'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Healthcheck
+      tags:
+      - health
+  /services:
+    get:
+      consumes:
+      - application/json
+      description: Получить постраничный список сервисов
+      parameters:
+      - description: Смещение
+        in: query
+        name: offset
+        type: integer
+      - description: Количество
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: data, count, limit, offset
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Список сервисов
+      tags:
+      - services
+    post:
+      consumes:
+      - application/json
+      description: Создаёт новый сервис
+      parameters:
+      - description: Данные сервиса
+        in: body
+        name: service
+        required: true
+        schema:
+          $ref: '#/definitions/main.ServiceCreateUpdate'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: id
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Создать сервис
+      tags:
+      - services
+  /services/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Удаляет сервис по его ID
+      parameters:
+      - description: ID сервиса
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Удалить сервис
+      tags:
+      - services
+    get:
+      consumes:
+      - application/json
+      description: Возвращает детали сервиса по его ID
+      parameters:
+      - description: ID сервиса
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: service
+          schema:
+            $ref: '#/definitions/main.ServiceRead'
+        "404":
+          description: error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Получить сервис по ID
+      tags:
+      - services
+    put:
+      consumes:
+      - application/json
+      description: Обновляет существующий сервис по ID
+      parameters:
+      - description: ID сервиса
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Новые данные сервиса
+        in: body
+        name: service
+        required: true
+        schema:
+          $ref: '#/definitions/main.ServiceCreateUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: updated
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Обновить сервис
+      tags:
+      - services
+  /services/sum:
+    get:
+      consumes:
+      - application/json
+      description: Вычисляет суммарную стоимость сервисов по пользователю и названию
+        за указанный период
+      parameters:
+      - description: ID пользователя
+        in: query
+        name: user_id
+        required: true
+        type: string
+      - description: Название сервиса
+        in: query
+        name: service_name
+        required: true
+        type: string
+      - description: Месяц начала (MM-YYYY)
+        in: query
+        name: start
+        required: true
+        type: string
+      - description: Месяц окончания (MM-YYYY)
+        in: query
+        name: finish
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: sum
+          schema:
+            additionalProperties:
+              type: number
+            type: object
+        "400":
+          description: error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Сумма сервисов
+      tags:
+      - services
 swagger: "2.0"

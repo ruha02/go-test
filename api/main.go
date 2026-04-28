@@ -2,11 +2,15 @@ package main
 
 import (
 	"log"
+	"main/docs"
 	"time"
 
 	ginzap "github.com/gin-contrib/zap"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	swaggerfiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
+
 	"go.uber.org/zap"
 )
 
@@ -44,7 +48,9 @@ func main() {
 
 	r := gin.New()
 	r.Use(ginzap.Ginzap(logger, time.RFC3339, true))
-
+	docs.SwaggerInfo.BasePath = "/"
 	createRouters(r, db)
+
+	r.GET("/docs/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 	r.Run()
 }
